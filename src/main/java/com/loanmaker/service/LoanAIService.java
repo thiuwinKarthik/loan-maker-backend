@@ -12,7 +12,7 @@ import java.util.Map;
 public class LoanAIService {
 
     private final RestTemplate restTemplate = new RestTemplate();
-    private final String baseUrl = "http://127.0.0.1:8000";
+    private final String baseUrl = "https://loan-maker-ai-production.up.railway.app";
 
     // 1️⃣ Prediction API
     public Map<String, Object> getLoanPrediction(LoanAiRequest request) {
