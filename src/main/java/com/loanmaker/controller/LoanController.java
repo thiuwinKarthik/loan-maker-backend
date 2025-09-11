@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/loans")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "https://timely-tanuki-loan-maker.netlify.app")
 public class LoanController {
 
     @Autowired
