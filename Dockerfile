@@ -1,11 +1,14 @@
-# Step 1: Build JAR with Java 21
-FROM maven:3.9.4-eclipse-temurin-21 AS build
-WORKDIR /app
-COPY . .
-RUN mvn clean package -DskipTests
+# Use official JDK image
+FROM openjdk:21-jdk-slim
 
-# Step 2: Run JAR with Java 21
-FROM eclipse-temurin:21-jdk
+# Set working directory
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
-CMD ["java", "-jar", "app.jar", "--server.port=$PORT"]
+
+# Copy the jar file
+COPY target/*.jar app.jar
+
+# Expose default port (for documentation only, Render overrides it)
+EXPOSE 8080
+
+# Run the application
+CMD ["java", "-jar", "app.jar"]
