@@ -13,7 +13,7 @@ public class LoanRecommendationService {
     @Autowired
     private RestTemplate restTemplate;
 
-    private final String RECOMMEND_URL = "https://loan-maker-ai-production.up.railway.app/recommend";
+    private final String RECOMMEND_URL = "https://loan-maker-ai.onrender.com/recommend";
 
     public Map<String, Object> getRecommendations(LoanRequest request) {
         Map<String, Object> response = restTemplate.postForObject(RECOMMEND_URL, request, Map.class);
