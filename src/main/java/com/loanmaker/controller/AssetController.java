@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/assets")
-@CrossOrigin(origins = "https://timely-tanuki-loan-maker.netlify.app")
+@CrossOrigin(origins = "https://loan-maker.netlify.app")
 public class AssetController {
 
     @Autowired
