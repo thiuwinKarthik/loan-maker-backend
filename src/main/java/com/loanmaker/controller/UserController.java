@@ -79,6 +79,9 @@ public class UserController {
         if (updatedUser.getPhone() != null) {
             user.setPhone(updatedUser.getPhone());
         }
+         if (updatedUser.getCreditScore() != null) {
+        user.setCreditScore(updatedUser.getCreditScore());
+    }
 
         // Save updated user
         User savedUser = userRepository.save(user);
