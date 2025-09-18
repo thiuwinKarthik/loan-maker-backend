@@ -41,7 +41,6 @@ public class AuthController {
             throw new RuntimeException("Invalid credentials");
         }
 
-        // Unwrap Optional properly
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -49,6 +48,7 @@ public class AuthController {
 
         return Map.of("token", token);
     }
+
     @PostMapping("/register")
     public Map<String, String> register(@RequestBody Map<String, String> request) {
         String name = request.get("name");
@@ -57,7 +57,6 @@ public class AuthController {
         String phone = request.get("phone");
         String role = request.getOrDefault("role", "USER");
 
-        // Check if email already exists
         if (userRepository.findByEmail(email).isPresent()) {
             return Map.of("message", "Email already exists!");
         }
@@ -70,9 +69,12 @@ public class AuthController {
         user.setPhone(phone);
         user.setRole(role);
 
+        // Quick fix: set default values for NOT NULL fields
+        user.setCreditScore(0);      // default credit score
+        user.setPreviousLoans(0);    // default previous loans
+
         userRepository.save(user);
 
-        // Generate JWT token after registration
         String token = jwtUtil.generateToken(user.getEmail());
 
         return Map.of(
