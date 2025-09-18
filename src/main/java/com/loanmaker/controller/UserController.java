@@ -14,7 +14,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
-// ✅ Remove @CrossOrigin("*") - it conflicts with our CORS config
 public class UserController {
 
     private final UserService userService;
@@ -28,6 +27,10 @@ public class UserController {
     // ✅ User registration
     @PostMapping("/register")
     public User registerUser(@RequestBody User user) {
+        // Set default credit score if not provided
+        if (user.getCreditScore() == null) {
+            user.setCreditScore(0);
+        }
         return userService.registerUser(user);
     }
 
@@ -35,6 +38,9 @@ public class UserController {
     @PostMapping("/register-admin")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public User registerAdmin(@RequestBody User user) {
+        if (user.getCreditScore() == null) {
+            user.setCreditScore(0);
+        }
         return userService.registerAdmin(user);
     }
 
@@ -49,26 +55,24 @@ public class UserController {
     @GetMapping("/profile")
     @PreAuthorize("hasAnyAuthority('USER', 'ROLE_ADMIN')")
     public ResponseEntity<?> getUserProfile() {
-        // Get the logged-in user's email from authentication
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
 
-        // Find user from DB
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Return full user info
+        // Hide password for security
+        user.setPassword(null);
         return ResponseEntity.ok(user);
     }
+
     // ✅ Update logged-in user profile
     @PutMapping("/profile")
     @PreAuthorize("hasAnyAuthority('USER', 'ROLE_ADMIN')")
     public ResponseEntity<?> updateUserProfile(@RequestBody User updatedUser) {
-        // Get logged-in user's email from JWT authentication
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
 
-        // Fetch user from database
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -79,17 +83,16 @@ public class UserController {
         if (updatedUser.getPhone() != null) {
             user.setPhone(updatedUser.getPhone());
         }
+        if (updatedUser.getCreditScore() != null) {
+            user.setCreditScore(updatedUser.getCreditScore());
+        }
 
-        // Save updated user
         User savedUser = userRepository.save(user);
-
-        // Return updated user (excluding password if needed)
-        savedUser.setPassword(null); // optional: hide password
+        savedUser.setPassword(null); // hide password
         return ResponseEntity.ok(savedUser);
     }
 
-
-    // ✅ Admin-only test endpoint
+    // ✅ Admin-only stats endpoint
     @GetMapping("/stats")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> getAdminStats() {
@@ -106,5 +109,4 @@ public class UserController {
             put("totalNormalUsers", totalNormalUsers);
         }});
     }
-
 }
